@@ -13,21 +13,27 @@ function Page() {
   const [winners, setWinners] = useState({});
   const [manualWinners, setManualWinners] = useState({});
 
+  // Updated for 1–90 Tambola
   const winnerPatterns = {
     firstFive: (numbers) => (numbers.length >= 5 ? numbers.slice(0, 5) : null),
+
+    // You can adjust these ranges based on your own custom logic
     firstLine: (numbers) =>
-      numbers.filter((n) => n >= 1 && n <= 10).length === 10
-        ? numbers.filter((n) => n >= 1 && n <= 10)
+      numbers.filter((n) => n >= 1 && n <= 30).length === 30
+        ? numbers.filter((n) => n >= 1 && n <= 30)
         : null,
+
     middleLine: (numbers) =>
-      numbers.filter((n) => n >= 41 && n <= 50).length === 10
-        ? numbers.filter((n) => n >= 41 && n <= 50)
+      numbers.filter((n) => n >= 31 && n <= 60).length === 30
+        ? numbers.filter((n) => n >= 31 && n <= 60)
         : null,
+
     lastLine: (numbers) =>
-      numbers.filter((n) => n >= 91 && n <= 100).length === 10
-        ? numbers.filter((n) => n >= 91 && n <= 100)
+      numbers.filter((n) => n >= 61 && n <= 90).length === 30
+        ? numbers.filter((n) => n >= 61 && n <= 90)
         : null,
-    fullHouse: (numbers) => (numbers.length === 100 ? [...numbers] : null),
+
+    fullHouse: (numbers) => (numbers.length === 90 ? [...numbers] : null),
   };
 
   // Load from localStorage
@@ -42,7 +48,7 @@ function Page() {
       setUuid(savedUuid);
       setGeneratedNumbers(savedNumbers);
       setRemainingNumbers(
-        Array.from({ length: 100 }, (_, i) => i + 1).filter(
+        Array.from({ length: 90 }, (_, i) => i + 1).filter(
           (num) => !savedNumbers.includes(num)
         )
       );
@@ -53,6 +59,7 @@ function Page() {
     }
   }, []);
 
+  // Save to localStorage
   useEffect(() => {
     if (uuid) {
       localStorage.setItem("uuid", uuid);
@@ -68,7 +75,7 @@ function Page() {
     const newUuid = uuidv4();
     setUuid(newUuid);
     setGeneratedNumbers([]);
-    setRemainingNumbers(Array.from({ length: 100 }, (_, i) => i + 1));
+    setRemainingNumbers(Array.from({ length: 90 }, (_, i) => i + 1));
     setWinners({});
     setManualWinners({});
     localStorage.setItem("uuid", newUuid);
@@ -116,14 +123,13 @@ function Page() {
     winners: manualWinners,
   });
 
-  // Helper to check if number is part of any winner
   const isWinnerNumber = (num) => {
     return Object.values(manualWinners).some((arr) => arr.includes(num));
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-start p-4 md:p-8 font-sans">
-      <h1 className="text-xl md:text-3xl font-bold mb-4 md:mb-6 text-white drop-shadow-md text-center">
+      <h1 className="text-xl md:text-3xl font-bold mb-4 md:mb-6 text-center">
         UUID: {uuid}
       </h1>
 
@@ -147,29 +153,28 @@ function Page() {
         <CardHeader>
           <CardTitle className="text-white text-center">Numbers Grid</CardTitle>
           <div className="mt-2 text-center text-lg">
-            <p className="text-purple-700 text-5xl font-bold ">
+            <p className="text-purple-700 text-5xl font-bold">
               {generatedNumbers.length > 0
-                ? ` ${
-                    generatedNumbers[generatedNumbers.length - 1]
-                  }`
+                ? `${generatedNumbers[generatedNumbers.length - 1]}`
                 : ""}
             </p>
           </div>
         </CardHeader>
+
         <CardContent className="grid grid-cols-10 gap-2 p-4">
-          {Array.from({ length: 100 }, (_, i) => i + 1).map((num) => {
+          {Array.from({ length: 90 }, (_, i) => i + 1).map((num) => {
             const isGenerated = generatedNumbers.includes(num);
             const isWinner = isWinnerNumber(num);
             return (
               <div
                 key={num}
-                className={`w-full aspect-square flex items-center justify-center rounded-md font-bold text-sm md:text-base
+                className={`w-full aspect-square flex items-center justify-center rounded-md font-bold
                   ${
                     isWinner
                       ? "bg-yellow-400 text-gray-900"
                       : isGenerated
                       ? "bg-green-500 text-gray-900"
-                      : "bg-gray-700 text-white hover:bg-gray-600 cursor-pointer"
+                      : "bg-gray-700 text-white hover:bg-gray-600"
                   }`}
               >
                 {num}
@@ -208,12 +213,7 @@ function Page() {
           <CardTitle className="text-white text-center">QR Code</CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center p-4 bg-gray-900">
-          <QRCode
-            value={qrData}
-            size={200}
-            bgColor="#1f2937"
-            fgColor="#ffffff"
-          />
+          <QRCode value={qrData} size={200} bgColor="#1f2937" fgColor="#ffffff" />
         </CardContent>
       </Card>
     </div>
